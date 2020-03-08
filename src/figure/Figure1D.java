@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -10,4 +12,4 @@ public abstract class Figure1D extends Figure {
 	public Figure1D(Point referencePoint, Color borderColor) {
 		super(referencePoint, borderColor);
 	}
-}//end Figure1D
+}//end figure.Figure1D

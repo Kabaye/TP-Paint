@@ -1,4 +1,6 @@
-public enum FigureAction {
+package ui;
+
+public enum DrawActions {
     CIRCLE,
     ELLIPSE,
     LINE,
@@ -10,5 +12,5 @@ public enum FigureAction {
     REGULAR_POLYGON,
     RHOMBUS,
     TRIANGLE,
-    MOVE;
+    MOVE
 }

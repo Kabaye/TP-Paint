@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,5 +23,7 @@ public class Line extends Ray {
     @Override
     public void draw(Graphics2D graphics2D) {
         super.draw(graphics2D);
+        getSecondPoint().setLocation(getReferencePoint().x * 2 - getReferencePoint().x, getReferencePoint().y * 2 - getReferencePoint().y);
+        super.draw(graphics2D);
     }
-}//end Line
+}//end figure.Line

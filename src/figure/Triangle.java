@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,4 +19,4 @@ public class Triangle extends Polygon {
 	public Triangle(List<Point> points, Color borderColor, Color innerColor) {
 		super(points, borderColor, innerColor);
 	}
-}//end Triangle
+}//end figure.Triangle

@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,4 +20,4 @@ public class Rectangle extends Polygon {
 	public Rectangle(List<Point> points, Color borderColor, Color innerColor) {
 		super(points, borderColor, innerColor);
 	}
-}//end Rectangle
+}//end figure.Rectangle

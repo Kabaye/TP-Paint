@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

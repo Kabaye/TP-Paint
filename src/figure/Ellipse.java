@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,4 +34,9 @@ public class Ellipse extends Figure2D {
     public void draw(Graphics2D graphics2D) {
 
     }
-}//end Ellipse
+
+    @Override
+    public boolean nextForRemoving() {
+        return getReferencePoint().equals(getFirstPoint()) && getReferencePoint().equals(getSecondPoint());
+    }
+}//end figure.Ellipse

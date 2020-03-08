@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,4 +20,4 @@ public abstract class Figure2D extends Figure{
         super(referencePoint, borderColor);
         this.innerColor = innerColor;
     }
-}//end Figure2D
+}//end figure.Figure2D

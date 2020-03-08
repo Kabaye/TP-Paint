@@ -1,3 +1,5 @@
+package figure;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,4 +18,4 @@ public class Circle extends Ellipse {
 	public Circle(Point referencePoint, Point firstPoint, Color borderColor, Color innerColor) {
 		super(referencePoint, firstPoint, firstPoint, borderColor, innerColor);
 	}
-}//end Circle
+}//end figure.Circle
