@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class Rhombus extends Polygon {
 
-	public Rhombus(Color borderColor, Color innerColor, List<Point> points) {
+	public Rhombus(List<Point> points, Color borderColor, Color innerColor) {
 		super(points, borderColor, innerColor);
 	}
 }//end Rhomb
