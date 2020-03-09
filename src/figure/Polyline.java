@@ -3,11 +3,13 @@ package figure;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * @author svkul
@@ -27,7 +29,9 @@ public class Polyline extends Figure1D {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-
+        graphics2D.setStroke(new BasicStroke(getBrushSize()));
+        graphics2D.setColor(getBorderColor());
+        graphics2D.drawPolyline(getXCoordinates(), getYCoordinates(), points.size() + 1);
     }
 
     @Override
@@ -37,13 +41,28 @@ public class Polyline extends Figure1D {
 
     @Override
     public boolean nextForRemoving() {
-        HashSet<Point> uniquePoints = new HashSet<>(points);
-        uniquePoints.add(getReferencePoint());
-        return uniquePoints.size() <= 1;
+        if (points.size() != 1) {
+            HashSet<Point> uniquePoints = new HashSet<>(points);
+            uniquePoints.add(getReferencePoint());
+            return uniquePoints.size() <= 1;
+        }
+        return false;
     }
 
     @Override
     public boolean contains(Point point) {
         return false;
+    }
+
+    int[] getXCoordinates() {
+        return IntStream.concat(IntStream.of(getReferencePoint().x),
+                points.stream().mapToInt(point -> point.x))
+                .toArray();
+    }
+
+    int[] getYCoordinates() {
+        return IntStream.concat(IntStream.of(getReferencePoint().y),
+                points.stream().mapToInt(point -> point.y))
+                .toArray();
     }
 }//end figure.Polyline

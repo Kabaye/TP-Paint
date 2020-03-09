@@ -2,6 +2,7 @@ package ui;
 
 import figure.Drawable;
 import figure.LineSegment;
+import figure.Polygon;
 import utils.Figures;
 
 import javax.swing.JButton;
@@ -22,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,6 +45,7 @@ public class App extends JFrame {
     private JToggleButton invisibleToggleBtn;
     private JPanel sizePane;
     private JSlider brushSizeSld;
+    private JToggleButton polygonBtn;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
@@ -54,7 +57,8 @@ public class App extends JFrame {
         super("Paint™ 2020. Kabaye Inc.");
         setContentPane(rootPane);
         drawables = new ArrayList<>();
-        setSize(1400, 700);
+        setSize((int) (1920 / 1.3), (int) (1080 / 1.3));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         configureUI();
     }
@@ -80,6 +84,7 @@ public class App extends JFrame {
                 invisibleToggleBtn.setSelected(true);
             }
         });
+        polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
         innerColorBtn.addActionListener(e -> {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
             this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
@@ -107,6 +112,16 @@ public class App extends JFrame {
                         case LINE:
                             drawables.add(Figures.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
                             break;
+                        case POLYGON:
+                            drawables.add(Figures.createPolygon(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            drawAction = DrawActions.ADD_POINT_TO_POLYGON;
+                            break;
+                        case ADD_POINT_TO_POLYGON:
+                            Polygon polygon = (Polygon) drawables.get(drawables.size() - 1);
+                            polygon.addPoint(e.getPoint());
+                            repaint();
+                            break;
                     }
                 }
             }
@@ -114,7 +129,12 @@ public class App extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
+                // TODO: 10.03.2020 filter polygon points inside polygon. Remove here polygon logic
                 drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
+                if (drawAction == DrawActions.ADD_POINT_TO_POLYGON && drawables.size() != 0 &&
+                        !drawables.get(drawables.size() - 1).getClass().equals(Polygon.class)) {
+                    drawAction = DrawActions.POLYGON;
+                }
             }
 
 
@@ -132,6 +152,10 @@ public class App extends JFrame {
                             LineSegment segment = ((LineSegment) drawable);
                             segment.setSecondPoint(e.getPoint());
                             segment.calculateSecondPoint();
+                            break;
+                        case ADD_POINT_TO_POLYGON:
+                            ((Polygon) drawable).updateLastPoint(e.getPoint());
+                            break;
                     }
                     repaint();
                 }
