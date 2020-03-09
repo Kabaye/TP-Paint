@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 public class Rectangle extends Polygon {
 
-	public Rectangle(List<Point> points, Color borderColor, Color innerColor) {
-		super(points, borderColor, innerColor);
+	public Rectangle(List<Point> points, Color borderColor, Color innerColor, int brushSize) {
+		super(points, borderColor, innerColor, brushSize);
 	}
 }//end figure.Rectangle

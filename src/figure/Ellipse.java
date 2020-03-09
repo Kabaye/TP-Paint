@@ -19,8 +19,8 @@ public class Ellipse extends Figure2D {
     private Point firstPoint;
     private Point secondPoint;
 
-    public Ellipse(Point referencePoint, Point firstPoint, Point secondPoint, Color borderColor, Color innerColor) {
-        super(referencePoint, borderColor, innerColor);
+    public Ellipse(Point referencePoint, Point firstPoint, Point secondPoint, Color borderColor, Color innerColor, int brushSize) {
+        super(referencePoint, borderColor, innerColor, brushSize);
         this.firstPoint = firstPoint;
         this.secondPoint = secondPoint;
     }
@@ -38,5 +38,10 @@ public class Ellipse extends Figure2D {
     @Override
     public boolean nextForRemoving() {
         return getReferencePoint().equals(getFirstPoint()) && getReferencePoint().equals(getSecondPoint());
+    }
+
+    @Override
+    public boolean contains(Point point) {
+        return false;
     }
 }//end figure.Ellipse

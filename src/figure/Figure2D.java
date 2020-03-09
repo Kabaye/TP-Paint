@@ -13,11 +13,11 @@ import java.awt.Point;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public abstract class Figure2D extends Figure{
+public abstract class Figure2D extends Figure {
     private Color innerColor;
 
-    public Figure2D(Point referencePoint, Color borderColor, Color innerColor) {
-        super(referencePoint, borderColor);
+    public Figure2D(Point referencePoint, Color borderColor, Color innerColor, int brushSize) {
+        super(referencePoint, borderColor, brushSize);
         this.innerColor = innerColor;
     }
 }//end figure.Figure2D

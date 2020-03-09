@@ -18,16 +18,15 @@ import java.awt.Point;
 public class LineSegment extends Figure1D {
     private Point secondPoint;
 
-    public LineSegment(Point referencePoint, Point secondPoint, Color borderColor) {
-        super(referencePoint, borderColor);
+    public LineSegment(Point referencePoint, Point secondPoint, Color borderColor, int brushSize) {
+        super(referencePoint, borderColor, brushSize);
         this.secondPoint = secondPoint;
     }
 
     @Override
     public void draw(Graphics2D graphics2D) {
         graphics2D.setColor(getBorderColor());
-        graphics2D.setStroke(new BasicStroke(5));
-        calculateSecondPoint();
+        graphics2D.setStroke(new BasicStroke(getBrushSize()));
         graphics2D.drawLine(getReferencePoint().x, getReferencePoint().y, getSecondPoint().x, getSecondPoint().y);
     }
 
@@ -38,11 +37,16 @@ public class LineSegment extends Figure1D {
         super.move(newPoint);
     }
 
-    protected void calculateSecondPoint(){
+    public void calculateSecondPoint() {
     }
 
     @Override
     public boolean nextForRemoving() {
+        return false;
+    }
+
+    @Override
+    public boolean contains(Point point) {
         return false;
     }
 }//end figure.LineSegment

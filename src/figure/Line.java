@@ -16,14 +16,15 @@ import java.awt.Point;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Line extends Ray {
-    public Line(Point referencePoint, Point secondPoint, Color borderColor) {
-        super(referencePoint, secondPoint, borderColor);
+    public Line(Point referencePoint, Point secondPoint, Color borderColor, int brushSize) {
+        super(referencePoint, secondPoint, borderColor, brushSize);
     }
 
     @Override
     public void draw(Graphics2D graphics2D) {
         super.draw(graphics2D);
-        getSecondPoint().setLocation(getReferencePoint().x * 2 - getReferencePoint().x, getReferencePoint().y * 2 - getReferencePoint().y);
+        getSecondPoint().setLocation(getReferencePoint().x * 2 - getSecondPoint().x, getReferencePoint().y * 2 - getSecondPoint().y);
+        super.calculateSecondPoint();
         super.draw(graphics2D);
     }
 }//end figure.Line

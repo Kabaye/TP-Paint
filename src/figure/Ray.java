@@ -4,51 +4,65 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.util.function.Function;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Ray extends LineSegment {
+    private Function<Integer, Integer> lineFunc;
 
-    public Ray(Point referencePoint, Point secondPoint, Color borderColor) {
-        super(referencePoint, secondPoint, borderColor);
+    public Ray(Point referencePoint, Point secondPoint, Color borderColor, int brushSize) {
+        super(referencePoint, secondPoint, borderColor, brushSize);
     }
 
     @Override
-    protected void calculateSecondPoint() {
-        System.out.println(getSecondPoint());
-        int windowWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-        int windowHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+    public void calculateSecondPoint() {
         int deltaX = getSecondPoint().x - getReferencePoint().x;
         int deltaY = getSecondPoint().y - getReferencePoint().y;
-        if (!(deltaY == 0 && deltaX == 0)) {
-            if (getSecondPoint().x > 0 && getSecondPoint().x < windowWidth &&
-                    getSecondPoint().y > 0 && getSecondPoint().y < windowHeight) {
-                if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                    int width;
-                    if (deltaX < 0) {
-                        width = -10;
-                    } else {
-                        width = windowWidth + 10;
-                    }
-                    getSecondPoint().setLocation(width, deltaY / deltaX * (width - getReferencePoint().x) + getReferencePoint().y);
+        int width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        int height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        if (getSecondPoint().x > 0 && getSecondPoint().x < width + 100 &&
+                getSecondPoint().y > 0 && getSecondPoint().y < height + 100) {
+            if (!(deltaX == 0)) {
+                Function<Integer, Integer> lineFunc = x -> (x - getReferencePoint().x) * (deltaY) / deltaX + getReferencePoint().y;
+                if (deltaX > 0) {
+                    int x = width + 100;
+                    int y = lineFunc.apply(x);
+                    getSecondPoint().setLocation(x, y);
                 } else {
-                    int height;
-                    if (deltaX < 0) {
-                        height = -10;
-                    } else {
-                        height = windowHeight + 10;
-                    }
-                    getSecondPoint().setLocation(deltaX / deltaY * (height - getReferencePoint().y) + getReferencePoint().x, height);
+                    int x = -100;
+                    int y = lineFunc.apply(x);
+                    getSecondPoint().setLocation(x, y);
+                }
+            } else {
+                if (deltaY < 0) {
+                    getSecondPoint().y = -100;
+                } else if (deltaY > 0) {
+                    getSecondPoint().y = height + 100;
                 }
             }
         }
-        System.out.println(getSecondPoint());
+    }
+
+    @Override
+    public void draw(Graphics2D graphics2D) {
+        if (!getReferencePoint().equals(getSecondPoint())) {
+            super.draw(graphics2D);
+        }
     }
 
     @Override
     public boolean nextForRemoving() {
         return getReferencePoint().equals(getSecondPoint());
     }
+
+    @Override
+    public boolean contains(Point point) {
+        return false;
+    }
+
+
 }//end figure.Ray

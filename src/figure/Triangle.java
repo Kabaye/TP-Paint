@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Triangle extends Polygon {
-	public Triangle(List<Point> points, Color borderColor, Color innerColor) {
-		super(points, borderColor, innerColor);
-	}
+    public Triangle(List<Point> points, Color borderColor, Color innerColor, int brushSize) {
+        super(points, borderColor, innerColor, brushSize);
+    }
 }//end figure.Triangle

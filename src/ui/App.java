@@ -5,10 +5,12 @@ import figure.LineSegment;
 import utils.Figures;
 
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -21,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class App extends JFrame {
@@ -38,11 +41,15 @@ public class App extends JFrame {
     private JToggleButton lineBtn;
     private JPanel drawPane;
     private JToggleButton invisibleToggleBtn;
+    private JPanel sizePane;
+    private JSlider brushSizeSld;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
     private Color borderColor = Color.BLACK;
     private Color innerColor = Color.BLUE;
+    private int brushSize;
+
     public App() {
         super("Paint™ 2020. Kabaye Inc.");
         setContentPane(rootPane);
@@ -57,10 +64,10 @@ public class App extends JFrame {
     }
 
     private void configureUI() {
+        brushSize = brushSizeSld.getValue();
         lineSegmentBtn.addActionListener(e -> drawAction = DrawActions.LINE_SEGMENT);
         rayBtn.addActionListener(e -> drawAction = DrawActions.RAY);
         lineBtn.addActionListener(e -> drawAction = DrawActions.LINE);
-
         regularPolygonBtn.addActionListener(e -> {
             final String dialogOutput = JOptionPane.showInputDialog(rootPane,
                     "Please, input number of regular polygon sides:", 5);
@@ -70,8 +77,20 @@ public class App extends JFrame {
             } catch (NumberFormatException | NullPointerException exc) {
                 regularPolygonBtn.setSelected(false);
                 invisibleToggleBtn.doClick();
+                invisibleToggleBtn.setSelected(true);
             }
         });
+        innerColorBtn.addActionListener(e -> {
+            Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
+            this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
+            innerColorBtn.setBackground(this.innerColor);
+        });
+        borderColorBtn.addActionListener(e -> {
+            Color borderColor = JColorChooser.showDialog(rootPane, "Choose border color:", this.borderColor, true);
+            this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
+            borderColorBtn.setBackground(this.borderColor);
+        });
+        brushSizeSld.addChangeListener(e -> brushSize = brushSizeSld.getValue());
 
         drawPane.addMouseListener(new MouseAdapter() {
             @Override
@@ -79,14 +98,14 @@ public class App extends JFrame {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     switch (drawAction) {
                         case LINE_SEGMENT:
-                            drawables.add(Figures.createLineSegment(e.getPoint(), e.getPoint(), borderColor));
+                            drawables.add(Figures.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
                             repaint();
                             break;
                         case RAY:
-                            drawables.add(Figures.createRay(e.getPoint(), e.getPoint(), borderColor));
+                            drawables.add(Figures.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize));
                             break;
                         case LINE:
-                            drawables.add(Figures.createLine(e.getPoint(), e.getPoint(), borderColor));
+                            drawables.add(Figures.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
                             break;
                     }
                 }
@@ -97,6 +116,8 @@ public class App extends JFrame {
                 super.mouseReleased(e);
                 drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
             }
+
+
         });
 
         drawPane.addMouseMotionListener(new MouseMotionAdapter() {
@@ -110,12 +131,12 @@ public class App extends JFrame {
                         case LINE:
                             LineSegment segment = ((LineSegment) drawable);
                             segment.setSecondPoint(e.getPoint());
+                            segment.calculateSecondPoint();
                     }
                     repaint();
                 }
             }
         });
-
 
         setVisible(true);
     }

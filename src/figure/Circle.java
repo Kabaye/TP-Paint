@@ -15,7 +15,7 @@ import java.awt.Point;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Circle extends Ellipse {
-	public Circle(Point referencePoint, Point firstPoint, Color borderColor, Color innerColor) {
-		super(referencePoint, firstPoint, firstPoint, borderColor, innerColor);
+	public Circle(Point referencePoint, Point firstPoint, Color borderColor, Color innerColor, int brushSize) {
+		super(referencePoint, firstPoint, firstPoint, borderColor, innerColor, brushSize);
 	}
 }//end figure.Circle

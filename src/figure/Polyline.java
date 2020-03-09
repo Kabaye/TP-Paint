@@ -20,8 +20,8 @@ import java.util.List;
 public class Polyline extends Figure1D {
     private List<Point> points;
 
-    public Polyline(List<Point> points, Color borderColor) {
-        super(points.get(0), borderColor);
+    public Polyline(List<Point> points, Color borderColor, int brushSize) {
+        super(points.get(0), borderColor, brushSize);
         this.points = points.subList(1, points.size());
     }
 
@@ -40,5 +40,10 @@ public class Polyline extends Figure1D {
         HashSet<Point> uniquePoints = new HashSet<>(points);
         uniquePoints.add(getReferencePoint());
         return uniquePoints.size() <= 1;
+    }
+
+    @Override
+    public boolean contains(Point point) {
+        return false;
     }
 }//end figure.Polyline

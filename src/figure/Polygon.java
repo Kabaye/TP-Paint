@@ -20,8 +20,8 @@ import java.util.List;
 public class Polygon extends Figure2D {
     private List<Point> points;
 
-    public Polygon(List<Point> points, Color borderColor, Color innerColor) {
-        super(points.get(0), borderColor, innerColor);
+    public Polygon(List<Point> points, Color borderColor, Color innerColor, int brushSize) {
+        super(points.get(0), borderColor, innerColor, brushSize);
         this.points = points.subList(1, points.size());
     }
 
@@ -39,6 +39,11 @@ public class Polygon extends Figure2D {
     public boolean nextForRemoving() {
         HashSet<Point> uniquePoints = new HashSet<>(points);
         uniquePoints.add(getReferencePoint());
-		return uniquePoints.size() <= 1;
-	}
+        return uniquePoints.size() <= 1;
+    }
+
+    @Override
+    public boolean contains(Point point) {
+        return false;
+    }
 }//end figure.Polygon

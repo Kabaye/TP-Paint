@@ -9,4 +9,6 @@ public interface Drawable {
     void move(Point newPoint);
 
     boolean nextForRemoving();
+
+    boolean contains(Point point);
 }
