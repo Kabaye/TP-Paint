@@ -55,9 +55,9 @@ public class Polygon extends Figure2D {
         points.add(point);
     }
 
-    public void setFigureVertex(Point point) {
+    public void setFigureVertex(Point figureVertex) {
         points.remove(points.size() - 1);
-        points.add(point);
+        points.add(figureVertex);
     }
 
     protected int[] getXCoordinates(boolean withReferencePoint) {

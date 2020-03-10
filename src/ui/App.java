@@ -4,6 +4,7 @@ import figure.Drawable;
 import figure.LineSegment;
 import figure.Polygon;
 import figure.Polyline;
+import figure.Triangle;
 import utils.Drawables;
 
 import javax.swing.JButton;
@@ -50,6 +51,7 @@ public class App extends JFrame {
     private JToggleButton polylineBtn;
     private JToggleButton rectangleBtn;
     private JToggleButton rhombusBtn;
+    private JToggleButton triangleBtn;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
@@ -131,6 +133,16 @@ public class App extends JFrame {
                                     borderColor, innerColor, brushSize));
                             repaint();
                             break;
+                        case TRIANGLE:
+                            drawables.add(Drawables.createTriangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case LAST_POINT_TRIANGLE:
+                            Triangle triangle = (Triangle) drawables.get(drawables.size() - 1);
+                            triangle.addPoint(e.getPoint());
+                            repaint();
+                            break;
                     }
                 }
             }
@@ -140,6 +152,15 @@ public class App extends JFrame {
                 super.mouseReleased(e);
                 // TODO: 10.03.2020 think about 2d figures
                 drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
+
+                switch (drawAction) {
+                    case TRIANGLE:
+                        drawAction = DrawActions.LAST_POINT_TRIANGLE;
+                        break;
+                    case LAST_POINT_TRIANGLE:
+                        drawAction = DrawActions.TRIANGLE;
+                        break;
+                }
             }
         });
 
@@ -160,15 +181,20 @@ public class App extends JFrame {
                         case REGULAR_POLYGON:
                         case RECTANGLE:
                         case RHOMBUS:
+                        case TRIANGLE:
+                        case LAST_POINT_TRIANGLE:
                             ((Polygon) drawable).setFigureVertex(e.getPoint());
                             break;
                         case ADD_POINT_TO_POLYLINE:
                             ((Polyline) drawable).setLastPoint(e.getPoint());
                             break;
+
+
                     }
                     repaint();
                 }
             }
+
         });
     }
 
@@ -184,14 +210,13 @@ public class App extends JFrame {
                 drawAction = DrawActions.REGULAR_POLYGON;
                 numOfSidesForRegularPolygon = Integer.parseInt(dialogOutput);
             } catch (NumberFormatException | NullPointerException exc) {
-                regularPolygonBtn.setSelected(false);
-                invisibleToggleBtn.doClick();
-                invisibleToggleBtn.setSelected(true);
+                unselectAllButtons();
             }
         });
         polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
         rectangleBtn.addActionListener(e -> drawAction = DrawActions.RECTANGLE);
         rhombusBtn.addActionListener(e -> drawAction = DrawActions.RHOMBUS);
+        triangleBtn.addActionListener(e -> drawAction = DrawActions.TRIANGLE);
 
         innerColorBtn.addActionListener(e -> {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
@@ -206,6 +231,11 @@ public class App extends JFrame {
         brushSizeSld.addChangeListener(e -> {
             this.brushSize = brushSizeSld.getValue();
         });
+    }
+
+    private void unselectAllButtons() {
+        invisibleToggleBtn.doClick();
+        invisibleToggleBtn.setSelected(true);
     }
 
     private void createUIComponents() {

@@ -14,6 +14,7 @@ public enum DrawActions {
     REGULAR_POLYGON,
     RHOMBUS,
     TRIANGLE,
+    LAST_POINT_TRIANGLE,
     MOVE,
     NOTHING
 }

@@ -20,8 +20,8 @@ public class RegularPolygon extends Polygon {
         this.angle = 360F / numOfSides;
     }
 
-    public void setFigureVertex(Point secondPoint) {
-        calculatePoints(secondPoint);
+    public void setFigureVertex(Point figureVertex) {
+        calculatePoints(figureVertex);
     }
 
     private void calculatePoints(Point secondPoint) {
