@@ -25,4 +25,18 @@ public class Triangle extends Polygon {
         super.setFigureVertex(figureVertex);
     }
 
+    @Override
+    public boolean contains(Point point) {
+        if (getPoints().size() == 2) {
+            Point p1 = getReferencePoint();
+            Point p2 = getPoints().get(0);
+            Point p3 = getPoints().get(1);
+
+            int var0 = (p1.x - point.x) * (p2.y - p1.y) - (p2.x - p1.x) * (p1.y - point.y);
+            int var1 = (p2.x - point.x) * (p3.y - p2.y) - (p3.x - p2.x) * (p2.y - point.y);
+            int var2 = (p3.x - point.x) * (p1.y - p3.y) - (p1.x - p3.x) * (p3.y - point.y);
+            return (var0 < 0 && var1 < 0 && var2 < 0) || (var0 == 0) || (var1 == 0) || (var2 == 0);
+        }
+        return false;
+    }
 }//end figure.Triangle
