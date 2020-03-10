@@ -28,6 +28,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -56,17 +57,18 @@ public class App extends JFrame {
     private JToggleButton ellipseBtn;
     private JToggleButton circleBtn;
     private JToggleButton moveBtn;
+
     private DrawActions drawAction = DrawActions.MOVE;
-    private int numOfSidesForRegularPolygon;
-    private List<Drawable> drawables;
+    private int numOfSidesForRegularPolygon = 5;
+    private List<Drawable> drawables = new ArrayList<>();
     private Color borderColor = Color.BLACK;
     private Color innerColor = Color.BLUE;
     private int brushSize;
+    private boolean isMoving = false;
 
     public App() {
         super("Paint™ 2020. Kabaye Inc.");
         setContentPane(rootPane);
-        drawables = new ArrayList<>();
         setSize((int) (1920 / 1.3), (int) (1080 / 1.3));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -92,7 +94,7 @@ public class App extends JFrame {
         polylineBtn.addActionListener(e -> drawAction = DrawActions.POLYLINE);
         regularPolygonBtn.addActionListener(e -> {
             final String dialogOutput = JOptionPane.showInputDialog(rootPane,
-                    "Please, input number of regular polygon sides:", 5);
+                    "Please, input number of regular polygon sides:", numOfSidesForRegularPolygon);
             try {
                 drawAction = DrawActions.REGULAR_POLYGON;
                 numOfSidesForRegularPolygon = Integer.parseInt(dialogOutput);
@@ -106,6 +108,7 @@ public class App extends JFrame {
         triangleBtn.addActionListener(e -> drawAction = DrawActions.TRIANGLE);
         ellipseBtn.addActionListener(e -> drawAction = DrawActions.ELLIPSE);
         circleBtn.addActionListener(e -> drawAction = DrawActions.CIRCLE);
+        moveBtn.addActionListener(e -> drawAction = DrawActions.MOVE);
 
         innerColorBtn.addActionListener(e -> {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
@@ -117,9 +120,7 @@ public class App extends JFrame {
             this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
             borderColorBtn.setBackground(this.borderColor);
         });
-        brushSizeSld.addChangeListener(e -> {
-            this.brushSize = brushSizeSld.getValue();
-        });
+        brushSizeSld.addChangeListener(e -> this.brushSize = brushSizeSld.getValue());
     }
 
     private void drawPaneConfig() {
@@ -164,6 +165,7 @@ public class App extends JFrame {
                             Polyline polyline = (Polyline) drawables.get(drawables.size() - 1);
                             polyline.addPoint(e.getPoint());
                             repaint();
+                            break;
                         case RECTANGLE:
                             drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
                                     borderColor, innerColor, brushSize));
@@ -192,6 +194,17 @@ public class App extends JFrame {
                             drawables.add(Drawables.createCircle(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
                             repaint();
                             break;
+                        case MOVE:
+                            ListIterator<Drawable> iterator = drawables.listIterator(drawables.size());
+                            while (iterator.hasPrevious()) {
+                                int index = iterator.previousIndex();
+                                if (iterator.previous().contains(e.getPoint())) {
+                                    isMoving = true;
+                                    drawables.add(drawables.remove(index));
+                                    break;
+                                }
+                            }
+                            break;
                     }
                 } else if (SwingUtilities.isRightMouseButton(e)) {
                     unselectAllButtons();
@@ -203,13 +216,15 @@ public class App extends JFrame {
                 super.mouseReleased(e);
                 // TODO: 10.03.2020 think about 2d figures
                 drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
-
                 switch (drawAction) {
                     case TRIANGLE:
                         drawAction = DrawActions.LAST_POINT_TRIANGLE;
                         break;
                     case LAST_POINT_TRIANGLE:
                         drawAction = DrawActions.TRIANGLE;
+                        break;
+                    case MOVE:
+                        isMoving = false;
                         break;
                 }
             }
@@ -242,6 +257,11 @@ public class App extends JFrame {
                         case ELLIPSE:
                         case CIRCLE:
                             ((Ellipse) drawable).setPointOnBorder(e.getPoint());
+                            break;
+                        case MOVE:
+                            if (isMoving) {
+                                drawable.move(e.getPoint());
+                            }
                             break;
                     }
                     repaint();

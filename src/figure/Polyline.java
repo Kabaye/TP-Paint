@@ -35,6 +35,9 @@ public class Polyline extends Figure1D {
 
     @Override
     public void move(Point newPoint) {
+        points.forEach(point -> point.setLocation(point.x + newPoint.x - getReferencePoint().x,
+                point.y + newPoint.y - getReferencePoint().y));
+        getReferencePoint().setLocation(newPoint.x, newPoint.y);
     }
 
     @Override
@@ -44,6 +47,17 @@ public class Polyline extends Figure1D {
 
     @Override
     public boolean contains(Point point) {
+        Point prevPoint = getReferencePoint();
+        for (Point nextPoint : points) {
+            int deltaX = nextPoint.x - prevPoint.x;
+            int deltaY = nextPoint.y - prevPoint.y;
+            double distance = (Math.abs(deltaY * point.getX() - deltaX * point.y + nextPoint.x * prevPoint.y - nextPoint.y * prevPoint.x) /
+                    Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+            if (distance < getBrushSize() / 2d) {
+                return true;
+            }
+            prevPoint = nextPoint;
+        }
         return false;
     }
 
