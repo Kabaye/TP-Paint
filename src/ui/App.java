@@ -6,6 +6,7 @@ import figure.Figure2D;
 import figure.LineSegment;
 import figure.Polygon;
 import figure.Polyline;
+import figure.Rectangle;
 import figure.RegularPolygon;
 import utils.Drawables;
 
@@ -51,6 +52,7 @@ public class App extends JFrame {
     private JSlider brushSizeSld;
     private JToggleButton polygonBtn;
     private JToggleButton polylineBtn;
+    private JToggleButton rectangleBtn;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
@@ -112,13 +114,17 @@ public class App extends JFrame {
                             repaint();
                             break;
                         case POLYLINE:
-                            drawables.add(Drawables.createPolyline(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, brushSize));
+                            drawables.add(Drawables.createPolyline(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, brushSize));
                             drawAction = DrawActions.ADD_POINT_TO_POLYLINE;
                             repaint();
                             break;
                         case ADD_POINT_TO_POLYLINE:
                             Polyline polyline = (Polyline) drawables.get(drawables.size() - 1);
                             polyline.addPoint(e.getPoint());
+                            repaint();
+                        case RECTANGLE:
+                            drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, innerColor, brushSize));
                             repaint();
                     }
                 }
@@ -154,6 +160,9 @@ public class App extends JFrame {
                         case ADD_POINT_TO_POLYLINE:
                             ((Polyline) drawable).setLastPoint(e.getPoint());
                             break;
+                        case RECTANGLE:
+                            ((Rectangle) drawable).setFigureVertex(e.getPoint());
+                            break;
                     }
                     repaint();
                 }
@@ -179,6 +188,8 @@ public class App extends JFrame {
             }
         });
         polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
+        rectangleBtn.addActionListener(e -> drawAction = DrawActions.RECTANGLE);
+
         innerColorBtn.addActionListener(e -> {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
             this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
