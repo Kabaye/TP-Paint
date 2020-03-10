@@ -1,24 +1,14 @@
 package ui;
 
 import figure.Drawable;
+import figure.Figure;
+import figure.Figure2D;
 import figure.LineSegment;
 import figure.Polygon;
 import utils.Figures;
 
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -89,13 +79,22 @@ public class App extends JFrame {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
             this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
             innerColorBtn.setBackground(this.innerColor);
+            drawables.forEach(drawable -> {
+                if (drawable instanceof Figure2D) {
+                    ((Figure2D) drawable).setInnerColor(this.innerColor);
+                }
+            });
         });
         borderColorBtn.addActionListener(e -> {
             Color borderColor = JColorChooser.showDialog(rootPane, "Choose border color:", this.borderColor, true);
             this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
             borderColorBtn.setBackground(this.borderColor);
+            drawables.forEach(drawable -> ((Figure) drawable).setBorderColor(this.borderColor));
         });
-        brushSizeSld.addChangeListener(e -> brushSize = brushSizeSld.getValue());
+        brushSizeSld.addChangeListener(e -> {
+            this.brushSize = brushSizeSld.getValue();
+            drawables.forEach(drawable -> ((Figure)drawable).setBrushSize(this.brushSize));
+        });
 
         drawPane.addMouseListener(new MouseAdapter() {
             @Override
