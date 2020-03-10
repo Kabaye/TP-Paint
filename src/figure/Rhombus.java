@@ -2,6 +2,7 @@ package figure;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import utils.LocalMathUtils;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -26,11 +27,14 @@ public class Rhombus extends Polygon {
         ArrayList<Point> points = new ArrayList<>();
         int x = 2 * getReferencePoint().x - figureVertex.x;
         int y = 2 * getReferencePoint().y - figureVertex.y;
-        Point diagonalFigureVertex = new Point(x, y);
-        points.add(new Point(diagonalFigureVertex.x, getReferencePoint().y));
-        points.add(new Point(getReferencePoint().x, diagonalFigureVertex.y));
-        points.add(new Point(figureVertex.x, getReferencePoint().y));
-        points.add(new Point(getReferencePoint().x, figureVertex.y));
+        points.add(new Point(LocalMathUtils.getByUnit(x, figureVertex.x, getReferencePoint().x, LocalMathUtils.Unit.MIN),
+                LocalMathUtils.getByUnit(y, figureVertex.y, getReferencePoint().y, LocalMathUtils.Unit.MIDDLE)));
+        points.add(new Point(LocalMathUtils.getByUnit(x, figureVertex.x, getReferencePoint().x, LocalMathUtils.Unit.MIDDLE),
+                LocalMathUtils.getByUnit(y, figureVertex.y, getReferencePoint().y, LocalMathUtils.Unit.MAX)));
+        points.add(new Point(LocalMathUtils.getByUnit(x, figureVertex.x, getReferencePoint().x, LocalMathUtils.Unit.MAX),
+                LocalMathUtils.getByUnit(y, figureVertex.y, getReferencePoint().y, LocalMathUtils.Unit.MIDDLE)));
+        points.add(new Point(LocalMathUtils.getByUnit(x, figureVertex.x, getReferencePoint().x, LocalMathUtils.Unit.MIDDLE),
+                LocalMathUtils.getByUnit(y, figureVertex.y, getReferencePoint().y, LocalMathUtils.Unit.MIN)));
         setPoints(points);
     }
 
@@ -46,5 +50,11 @@ public class Rhombus extends Polygon {
     @Override
     protected int[] getYCoordinates(boolean withReferencePoint) {
         return super.getYCoordinates(false);
+    }
+
+    @Override
+    public boolean contains(Point point) {
+        return Math.abs((point.x - getReferencePoint().x) / (getPoints().get(0).x - getPoints().get(2).x)) +
+                Math.abs((point.y - getReferencePoint().y) / (getPoints().get(1).y - getPoints().get(3).y)) <= 2;
     }
 }//end Rhombus
