@@ -26,8 +26,8 @@ public class Drawables {
         return new Circle(referencePoint, firstPoint, borderColor, innerColor, brushSize);
     }
 
-    public static Drawable createEllipse(Point referencePoint, Point firstPoint, Point secondPoint, Color borderColor, Color innerColor, int brushSize) {
-        return new Ellipse(referencePoint, firstPoint, secondPoint, borderColor, innerColor, brushSize);
+    public static Drawable createEllipse(Point referencePoint, Point firstPoint, Color borderColor, Color innerColor, int brushSize) {
+        return new Ellipse(referencePoint, firstPoint, borderColor, innerColor, brushSize);
     }
 
     public static Drawable createLine(Point referencePoint, Point secondPoint, Color borderColor, int brushSize) {

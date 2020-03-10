@@ -25,7 +25,7 @@ public class RegularPolygon extends Polygon {
     }
 
     private void calculatePoints(Point secondPoint) {
-        ArrayList<Point> points = new ArrayList<>(numOfSides + 1);
+        ArrayList<Point> points = new ArrayList<>(numOfSides);
         double radius = Math.sqrt((getReferencePoint().x - secondPoint.x) * (getReferencePoint().x - secondPoint.x)
                 + (getReferencePoint().y - secondPoint.y) * (getReferencePoint().y - secondPoint.y));
 

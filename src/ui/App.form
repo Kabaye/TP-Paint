@@ -78,8 +78,8 @@
             <properties>
               <background color="-3935502"/>
               <focusable value="false"/>
-              <minimumSize width="130" height="400"/>
-              <preferredSize width="130" height="600"/>
+              <minimumSize width="130" height="375"/>
+              <preferredSize width="130" height="375"/>
             </properties>
             <border type="none"/>
             <children>
@@ -233,6 +233,60 @@
                   <text value="Triangle"/>
                 </properties>
               </component>
+              <component id="bead7" class="javax.swing.JToggleButton" binding="ellipseBtn">
+                <constraints>
+                  <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Ellipse"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Ellipse"/>
+                </properties>
+              </component>
+              <component id="37b33" class="javax.swing.JToggleButton" binding="circleBtn">
+                <constraints>
+                  <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Circle"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Circle"/>
+                </properties>
+              </component>
+              <vspacer id="3488e">
+                <constraints>
+                  <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+              </vspacer>
+              <component id="adfce" class="javax.swing.JToggleButton" binding="moveBtn">
+                <constraints>
+                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Move"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Move"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <grid id="49f97" binding="colorPane" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -320,6 +374,9 @@
       <member id="ba07c"/>
       <member id="6f672"/>
       <member id="c3e4c"/>
+      <member id="bead7"/>
+      <member id="adfce"/>
+      <member id="37b33"/>
     </group>
   </buttonGroups>
 </form>

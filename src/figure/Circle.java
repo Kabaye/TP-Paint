@@ -15,7 +15,26 @@ import java.awt.Point;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Circle extends Ellipse {
-	public Circle(Point referencePoint, Point firstPoint, Color borderColor, Color innerColor, int brushSize) {
-		super(referencePoint, firstPoint, firstPoint, borderColor, innerColor, brushSize);
-	}
+    public Circle(Point referencePoint, Point pointOnBorder, Color borderColor, Color innerColor, int brushSize) {
+        super(referencePoint, pointOnBorder, borderColor, innerColor, brushSize);
+    }
+
+    @Override
+    protected int getWidth() {
+        return getRadius() * 2;
+    }
+
+    @Override
+    protected int getHeight() {
+        return getRadius() * 2;
+    }
+
+    private int getRadius() {
+        return (int) Math.sqrt((super.getHeight() * super.getHeight() + super.getWidth() * super.getWidth()) / 4f);
+    }
+
+    @Override
+    protected Point calculateLeftTopPoint() {
+        return new Point(getReferencePoint().x - getRadius(), getReferencePoint().y - getRadius());
+    }
 }//end figure.Circle

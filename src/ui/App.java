@@ -1,6 +1,7 @@
 package ui;
 
 import figure.Drawable;
+import figure.Ellipse;
 import figure.LineSegment;
 import figure.Polygon;
 import figure.Polyline;
@@ -52,6 +53,9 @@ public class App extends JFrame {
     private JToggleButton rectangleBtn;
     private JToggleButton rhombusBtn;
     private JToggleButton triangleBtn;
+    private JToggleButton ellipseBtn;
+    private JToggleButton circleBtn;
+    private JToggleButton moveBtn;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
@@ -79,6 +83,43 @@ public class App extends JFrame {
         drawPaneConfig();
 
         setVisible(true);
+    }
+
+    private void controlPaneListenersConfig() {
+        lineSegmentBtn.addActionListener(e -> drawAction = DrawActions.LINE_SEGMENT);
+        rayBtn.addActionListener(e -> drawAction = DrawActions.RAY);
+        lineBtn.addActionListener(e -> drawAction = DrawActions.LINE);
+        polylineBtn.addActionListener(e -> drawAction = DrawActions.POLYLINE);
+        regularPolygonBtn.addActionListener(e -> {
+            final String dialogOutput = JOptionPane.showInputDialog(rootPane,
+                    "Please, input number of regular polygon sides:", 5);
+            try {
+                drawAction = DrawActions.REGULAR_POLYGON;
+                numOfSidesForRegularPolygon = Integer.parseInt(dialogOutput);
+            } catch (NumberFormatException | NullPointerException exc) {
+                unselectAllButtons();
+            }
+        });
+        polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
+        rectangleBtn.addActionListener(e -> drawAction = DrawActions.RECTANGLE);
+        rhombusBtn.addActionListener(e -> drawAction = DrawActions.RHOMBUS);
+        triangleBtn.addActionListener(e -> drawAction = DrawActions.TRIANGLE);
+        ellipseBtn.addActionListener(e -> drawAction = DrawActions.ELLIPSE);
+        circleBtn.addActionListener(e -> drawAction = DrawActions.CIRCLE);
+
+        innerColorBtn.addActionListener(e -> {
+            Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
+            this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
+            innerColorBtn.setBackground(this.innerColor);
+        });
+        borderColorBtn.addActionListener(e -> {
+            Color borderColor = JColorChooser.showDialog(rootPane, "Choose border color:", this.borderColor, true);
+            this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
+            borderColorBtn.setBackground(this.borderColor);
+        });
+        brushSizeSld.addChangeListener(e -> {
+            this.brushSize = brushSizeSld.getValue();
+        });
     }
 
     private void drawPaneConfig() {
@@ -143,6 +184,14 @@ public class App extends JFrame {
                             triangle.addPoint(e.getPoint());
                             repaint();
                             break;
+                        case ELLIPSE:
+                            drawables.add(Drawables.createEllipse(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case CIRCLE:
+                            drawables.add(Drawables.createCircle(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
                     }
                 }
             }
@@ -188,6 +237,10 @@ public class App extends JFrame {
                         case ADD_POINT_TO_POLYLINE:
                             ((Polyline) drawable).setLastPoint(e.getPoint());
                             break;
+                        case ELLIPSE:
+                        case CIRCLE:
+                            ((Ellipse) drawable).setPointOnBorder(e.getPoint());
+                            break;
 
 
                     }
@@ -195,41 +248,6 @@ public class App extends JFrame {
                 }
             }
 
-        });
-    }
-
-    private void controlPaneListenersConfig() {
-        lineSegmentBtn.addActionListener(e -> drawAction = DrawActions.LINE_SEGMENT);
-        rayBtn.addActionListener(e -> drawAction = DrawActions.RAY);
-        lineBtn.addActionListener(e -> drawAction = DrawActions.LINE);
-        polylineBtn.addActionListener(e -> drawAction = DrawActions.POLYLINE);
-        regularPolygonBtn.addActionListener(e -> {
-            final String dialogOutput = JOptionPane.showInputDialog(rootPane,
-                    "Please, input number of regular polygon sides:", 5);
-            try {
-                drawAction = DrawActions.REGULAR_POLYGON;
-                numOfSidesForRegularPolygon = Integer.parseInt(dialogOutput);
-            } catch (NumberFormatException | NullPointerException exc) {
-                unselectAllButtons();
-            }
-        });
-        polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
-        rectangleBtn.addActionListener(e -> drawAction = DrawActions.RECTANGLE);
-        rhombusBtn.addActionListener(e -> drawAction = DrawActions.RHOMBUS);
-        triangleBtn.addActionListener(e -> drawAction = DrawActions.TRIANGLE);
-
-        innerColorBtn.addActionListener(e -> {
-            Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
-            this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
-            innerColorBtn.setBackground(this.innerColor);
-        });
-        borderColorBtn.addActionListener(e -> {
-            Color borderColor = JColorChooser.showDialog(rootPane, "Choose border color:", this.borderColor, true);
-            this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
-            borderColorBtn.setBackground(this.borderColor);
-        });
-        brushSizeSld.addChangeListener(e -> {
-            this.brushSize = brushSizeSld.getValue();
         });
     }
 
