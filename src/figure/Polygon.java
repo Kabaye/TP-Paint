@@ -39,6 +39,9 @@ public class Polygon extends Figure2D {
 
     @Override
     public void move(Point newPoint) {
+        points.forEach(point -> point.setLocation(point.x + newPoint.x - getReferencePoint().x,
+                point.y + newPoint.y - getReferencePoint().y));
+        getReferencePoint().setLocation(newPoint.x, newPoint.y);
     }
 
     @Override

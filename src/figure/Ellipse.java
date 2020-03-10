@@ -26,7 +26,8 @@ public class Ellipse extends Figure2D {
 
     @Override
     public void move(Point newPoint) {
-
+        pointOnBorder.setLocation(pointOnBorder.x + newPoint.x - getReferencePoint().x, pointOnBorder.y + newPoint.y - getReferencePoint().y);
+        getReferencePoint().setLocation(newPoint);
     }
 
     @Override
@@ -62,6 +63,8 @@ public class Ellipse extends Figure2D {
 
     @Override
     public boolean contains(Point point) {
-        return false;
+        double alpha = (double) (point.x - getReferencePoint().x) / getWidth() * 2;
+        double beta = (double) (point.y - getReferencePoint().y) / getHeight() * 2;
+        return alpha * alpha + beta * beta < 1;
     }
 }//end figure.Ellipse

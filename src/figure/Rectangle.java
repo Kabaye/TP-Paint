@@ -26,11 +26,10 @@ public class Rectangle extends Polygon {
         ArrayList<Point> points = new ArrayList<>();
         int x = 2 * getReferencePoint().x - figureVertex.x;
         int y = 2 * getReferencePoint().y - figureVertex.y;
-        Point diagonalFigureVertex = new Point(x, y);
-        points.add(diagonalFigureVertex);
-        points.add(new Point(diagonalFigureVertex.x, figureVertex.y));
-        points.add(new Point(figureVertex.x, figureVertex.y));
-        points.add(new Point(figureVertex.x, diagonalFigureVertex.y));
+        points.add(new Point(Math.min(x, figureVertex.x), Math.min(y, figureVertex.y)));
+        points.add(new Point(Math.min(x, figureVertex.x), Math.max(y, figureVertex.y)));
+        points.add(new Point(Math.max(x, figureVertex.x), Math.max(y, figureVertex.y)));
+        points.add(new Point(Math.max(x, figureVertex.x), Math.min(y, figureVertex.y)));
         setPoints(points);
     }
 
@@ -46,5 +45,13 @@ public class Rectangle extends Polygon {
     @Override
     protected int[] getYCoordinates(boolean withReferencePoint) {
         return super.getYCoordinates(false);
+    }
+
+    @Override
+    public boolean contains(Point point) {
+        Point leftTopPoint = getPoints().get(0);
+        Point rightBottomPoint = getPoints().get(2);
+        return point.x <= rightBottomPoint.x + getBrushSize() / 2 && point.x >= leftTopPoint.x - getBrushSize() / 2 &&
+                point.y >= leftTopPoint.y - getBrushSize() / 2 && point.y <= rightBottomPoint.y + getBrushSize() / 2;
     }
 }//end figure.Rectangle
