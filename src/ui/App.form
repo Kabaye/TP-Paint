@@ -2,13 +2,15 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ui.App">
   <grid id="27dc6" binding="rootPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="622" height="400"/>
+      <xy x="20" y="20" width="1700" height="900"/>
     </constraints>
-    <properties/>
+    <properties>
+      <minimumSize width="1700" height="900"/>
+      <preferredSize width="1700" height="900"/>
+    </properties>
     <border type="none"/>
     <children>
-      <grid id="66bd3" binding="controlPane" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
+      <grid id="66bd3" binding="controlPane" layout-manager="GridBagLayout">
         <constraints border-constraint="Before"/>
         <properties>
           <background color="-2693646"/>
@@ -21,20 +23,22 @@
           <grid id="27a7b" binding="sizePane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="1" fill="0" indent="0" use-parent-layout="false">
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="150" height="-1"/>
                 <preferred-size width="117" height="51"/>
                 <maximum-size width="150" height="-1"/>
               </grid>
+              <gridbag weightx="1.0" weighty="1.0"/>
             </constraints>
             <properties>
               <background color="-3149838"/>
+              <minimumSize width="154" height="100"/>
             </properties>
             <border type="none"/>
             <children>
               <component id="c1b8f" class="javax.swing.JSlider" binding="brushSizeSld">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="10" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                     <maximum-size width="150" height="-1"/>
                   </grid>
@@ -66,21 +70,22 @@
           </grid>
           <grid id="e1ae2" binding="buttonPane" layout-manager="GridBagLayout">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="1" fill="0" indent="0" use-parent-layout="false">
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="117" height="40"/>
               </grid>
+              <gridbag weightx="1.0" weighty="1.0"/>
             </constraints>
             <properties>
               <background color="-3935502"/>
               <focusable value="false"/>
-              <minimumSize width="130" height="120"/>
-              <preferredSize width="130" height="40"/>
+              <minimumSize width="130" height="375"/>
+              <preferredSize width="130" height="375"/>
             </properties>
             <border type="none"/>
             <children>
               <component id="159c5" class="javax.swing.JToggleButton" binding="rayBtn">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -104,7 +109,7 @@
               </component>
               <component id="3c048" class="javax.swing.JToggleButton" binding="lineBtn">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -119,7 +124,7 @@
               </component>
               <component id="26c12" class="javax.swing.JToggleButton" binding="lineSegmentBtn">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -134,18 +139,152 @@
               </component>
               <component id="1db5" class="javax.swing.JToggleButton" binding="regularPolygonBtn">
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
                   <horizontalAlignment value="0"/>
                   <horizontalTextPosition value="0"/>
                   <label value="Regular polygon"/>
-                  <margin top="0" left="1" bottom="0" right="0"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
                   <maximumSize width="130" height="30"/>
                   <minimumSize width="130" height="30"/>
                   <preferredSize width="122" height="30"/>
                   <text value="Regular polygon"/>
+                </properties>
+              </component>
+              <component id="dfd94" class="javax.swing.JToggleButton" binding="polygonBtn">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Polygon"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Polygon"/>
+                </properties>
+              </component>
+              <component id="b35bc" class="javax.swing.JToggleButton" binding="polylineBtn">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Polyline"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Polyline"/>
+                </properties>
+              </component>
+              <component id="ba07c" class="javax.swing.JToggleButton" binding="rectangleBtn">
+                <constraints>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Rectangle"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Rectangle"/>
+                </properties>
+              </component>
+              <component id="6f672" class="javax.swing.JToggleButton" binding="rhombusBtn">
+                <constraints>
+                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Rhombus"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Rhombus"/>
+                </properties>
+              </component>
+              <component id="c3e4c" class="javax.swing.JToggleButton" binding="triangleBtn">
+                <constraints>
+                  <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Triangle"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Triangle"/>
+                </properties>
+              </component>
+              <component id="bead7" class="javax.swing.JToggleButton" binding="ellipseBtn">
+                <constraints>
+                  <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Ellipse"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Ellipse"/>
+                </properties>
+              </component>
+              <component id="37b33" class="javax.swing.JToggleButton" binding="circleBtn">
+                <constraints>
+                  <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Circle"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Circle"/>
+                </properties>
+              </component>
+              <vspacer id="3488e">
+                <constraints>
+                  <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+              </vspacer>
+              <component id="adfce" class="javax.swing.JToggleButton" binding="moveBtn">
+                <constraints>
+                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <label value="Move"/>
+                  <margin top="0" left="0" bottom="0" right="0"/>
+                  <maximumSize width="130" height="30"/>
+                  <minimumSize width="130" height="30"/>
+                  <preferredSize width="122" height="30"/>
+                  <text value="Move"/>
                 </properties>
               </component>
             </children>
@@ -153,9 +292,10 @@
           <grid id="49f97" binding="colorPane" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="1" fill="0" indent="0" use-parent-layout="false">
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="2" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="117" height="64"/>
               </grid>
+              <gridbag weightx="1.0" weighty="1.0"/>
             </constraints>
             <properties>
               <background color="-4995854"/>
@@ -229,6 +369,14 @@
       <member id="26c12"/>
       <member id="9450c"/>
       <member id="1db5"/>
+      <member id="dfd94"/>
+      <member id="b35bc"/>
+      <member id="ba07c"/>
+      <member id="6f672"/>
+      <member id="c3e4c"/>
+      <member id="bead7"/>
+      <member id="adfce"/>
+      <member id="37b33"/>
     </group>
   </buttonGroups>
 </form>

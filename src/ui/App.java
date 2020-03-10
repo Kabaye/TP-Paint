@@ -1,8 +1,12 @@
 package ui;
 
 import figure.Drawable;
+import figure.Ellipse;
 import figure.LineSegment;
-import utils.Figures;
+import figure.Polygon;
+import figure.Polyline;
+import figure.Triangle;
+import utils.Drawables;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -22,7 +26,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -43,18 +49,28 @@ public class App extends JFrame {
     private JToggleButton invisibleToggleBtn;
     private JPanel sizePane;
     private JSlider brushSizeSld;
+    private JToggleButton polygonBtn;
+    private JToggleButton polylineBtn;
+    private JToggleButton rectangleBtn;
+    private JToggleButton rhombusBtn;
+    private JToggleButton triangleBtn;
+    private JToggleButton ellipseBtn;
+    private JToggleButton circleBtn;
+    private JToggleButton moveBtn;
+
     private DrawActions drawAction = DrawActions.MOVE;
-    private int numOfSidesForRegularPolygon;
-    private List<Drawable> drawables;
+    private int numOfSidesForRegularPolygon = 5;
+    private List<Drawable> drawables = new ArrayList<>();
     private Color borderColor = Color.BLACK;
     private Color innerColor = Color.BLUE;
     private int brushSize;
+    private boolean isMoving = false;
 
     public App() {
         super("Paint™ 2020. Kabaye Inc.");
         setContentPane(rootPane);
-        drawables = new ArrayList<>();
-        setSize(1400, 700);
+        setSize((int) (1920 / 1.3), (int) (1080 / 1.3));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         configureUI();
     }
@@ -65,21 +81,35 @@ public class App extends JFrame {
 
     private void configureUI() {
         brushSize = brushSizeSld.getValue();
+        controlPaneListenersConfig();
+        drawPaneConfig();
+
+        setVisible(true);
+    }
+
+    private void controlPaneListenersConfig() {
         lineSegmentBtn.addActionListener(e -> drawAction = DrawActions.LINE_SEGMENT);
         rayBtn.addActionListener(e -> drawAction = DrawActions.RAY);
         lineBtn.addActionListener(e -> drawAction = DrawActions.LINE);
+        polylineBtn.addActionListener(e -> drawAction = DrawActions.POLYLINE);
         regularPolygonBtn.addActionListener(e -> {
             final String dialogOutput = JOptionPane.showInputDialog(rootPane,
-                    "Please, input number of regular polygon sides:", 5);
+                    "Please, input number of regular polygon sides:", numOfSidesForRegularPolygon);
             try {
                 drawAction = DrawActions.REGULAR_POLYGON;
                 numOfSidesForRegularPolygon = Integer.parseInt(dialogOutput);
             } catch (NumberFormatException | NullPointerException exc) {
-                regularPolygonBtn.setSelected(false);
-                invisibleToggleBtn.doClick();
-                invisibleToggleBtn.setSelected(true);
+                unselectAllButtons();
             }
         });
+        polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
+        rectangleBtn.addActionListener(e -> drawAction = DrawActions.RECTANGLE);
+        rhombusBtn.addActionListener(e -> drawAction = DrawActions.RHOMBUS);
+        triangleBtn.addActionListener(e -> drawAction = DrawActions.TRIANGLE);
+        ellipseBtn.addActionListener(e -> drawAction = DrawActions.ELLIPSE);
+        circleBtn.addActionListener(e -> drawAction = DrawActions.CIRCLE);
+        moveBtn.addActionListener(e -> drawAction = DrawActions.MOVE);
+
         innerColorBtn.addActionListener(e -> {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
             this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
@@ -90,34 +120,114 @@ public class App extends JFrame {
             this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
             borderColorBtn.setBackground(this.borderColor);
         });
-        brushSizeSld.addChangeListener(e -> brushSize = brushSizeSld.getValue());
+        brushSizeSld.addChangeListener(e -> this.brushSize = brushSizeSld.getValue());
+    }
 
+    private void drawPaneConfig() {
         drawPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     switch (drawAction) {
                         case LINE_SEGMENT:
-                            drawables.add(Figures.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            drawables.add(Drawables.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
                             repaint();
                             break;
                         case RAY:
-                            drawables.add(Figures.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            drawables.add(Drawables.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize));
                             break;
                         case LINE:
-                            drawables.add(Figures.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            drawables.add(Drawables.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            break;
+                        case POLYGON:
+                            drawables.add(Drawables.createPolygon(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            drawAction = DrawActions.ADD_POINT_TO_POLYGON;
+                            repaint();
+                            break;
+                        case ADD_POINT_TO_POLYGON:
+                            Polygon polygon = (Polygon) drawables.get(drawables.size() - 1);
+                            polygon.addPoint(e.getPoint());
+                            repaint();
+                            break;
+                        case REGULAR_POLYGON:
+                            drawables.add(Drawables.createRegularPolygon(e.getPoint(), e.getPoint(), numOfSidesForRegularPolygon,
+                                    borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case POLYLINE:
+                            drawables.add(Drawables.createPolyline(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, brushSize));
+                            drawAction = DrawActions.ADD_POINT_TO_POLYLINE;
+                            repaint();
+                            break;
+                        case ADD_POINT_TO_POLYLINE:
+                            Polyline polyline = (Polyline) drawables.get(drawables.size() - 1);
+                            polyline.addPoint(e.getPoint());
+                            repaint();
+                            break;
+                        case RECTANGLE:
+                            drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case RHOMBUS:
+                            drawables.add(Drawables.createRhombus(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case TRIANGLE:
+                            drawables.add(Drawables.createTriangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case LAST_POINT_TRIANGLE:
+                            Triangle triangle = (Triangle) drawables.get(drawables.size() - 1);
+                            triangle.addPoint(e.getPoint());
+                            repaint();
+                            break;
+                        case ELLIPSE:
+                            drawables.add(Drawables.createEllipse(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case CIRCLE:
+                            drawables.add(Drawables.createCircle(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case MOVE:
+                            ListIterator<Drawable> iterator = drawables.listIterator(drawables.size());
+                            while (iterator.hasPrevious()) {
+                                int index = iterator.previousIndex();
+                                if (iterator.previous().contains(e.getPoint())) {
+                                    isMoving = true;
+                                    drawables.add(drawables.remove(index));
+                                    break;
+                                }
+                            }
                             break;
                     }
+                } else if (SwingUtilities.isRightMouseButton(e)) {
+                    unselectAllButtons();
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
+                // TODO: 10.03.2020 think about 2d figures
                 drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
+                switch (drawAction) {
+                    case TRIANGLE:
+                        drawAction = DrawActions.LAST_POINT_TRIANGLE;
+                        break;
+                    case LAST_POINT_TRIANGLE:
+                        drawAction = DrawActions.TRIANGLE;
+                        break;
+                    case MOVE:
+                        isMoving = false;
+                        break;
+                }
             }
-
-
         });
 
         drawPane.addMouseMotionListener(new MouseMotionAdapter() {
@@ -132,13 +242,38 @@ public class App extends JFrame {
                             LineSegment segment = ((LineSegment) drawable);
                             segment.setSecondPoint(e.getPoint());
                             segment.calculateSecondPoint();
+                            break;
+                        case ADD_POINT_TO_POLYGON:
+                        case REGULAR_POLYGON:
+                        case RECTANGLE:
+                        case RHOMBUS:
+                        case TRIANGLE:
+                        case LAST_POINT_TRIANGLE:
+                            ((Polygon) drawable).setFigureVertex(e.getPoint());
+                            break;
+                        case ADD_POINT_TO_POLYLINE:
+                            ((Polyline) drawable).setLastPoint(e.getPoint());
+                            break;
+                        case ELLIPSE:
+                        case CIRCLE:
+                            ((Ellipse) drawable).setPointOnBorder(e.getPoint());
+                            break;
+                        case MOVE:
+                            if (isMoving) {
+                                drawable.move(e.getPoint());
+                            }
+                            break;
                     }
                     repaint();
                 }
             }
         });
+    }
 
-        setVisible(true);
+    private void unselectAllButtons() {
+        invisibleToggleBtn.doClick();
+        invisibleToggleBtn.setSelected(true);
+        drawAction = DrawActions.NOTHING;
     }
 
     private void createUIComponents() {

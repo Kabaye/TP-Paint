@@ -3,11 +3,12 @@ package figure;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * @author svkul
@@ -27,23 +28,57 @@ public class Polyline extends Figure1D {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-
+        graphics2D.setStroke(new BasicStroke(getBrushSize()));
+        graphics2D.setColor(getBorderColor());
+        graphics2D.drawPolyline(getXCoordinates(), getYCoordinates(), points.size() + 1);
     }
 
     @Override
     public void move(Point newPoint) {
-
+        points.forEach(point -> point.setLocation(point.x + newPoint.x - getReferencePoint().x,
+                point.y + newPoint.y - getReferencePoint().y));
+        getReferencePoint().setLocation(newPoint.x, newPoint.y);
     }
 
     @Override
     public boolean nextForRemoving() {
-        HashSet<Point> uniquePoints = new HashSet<>(points);
-        uniquePoints.add(getReferencePoint());
-        return uniquePoints.size() <= 1;
+        return false;
     }
 
     @Override
     public boolean contains(Point point) {
+        Point prevPoint = getReferencePoint();
+        for (Point nextPoint : points) {
+            int deltaX = nextPoint.x - prevPoint.x;
+            int deltaY = nextPoint.y - prevPoint.y;
+            double distance = (Math.abs(deltaY * point.getX() - deltaX * point.y + nextPoint.x * prevPoint.y - nextPoint.y * prevPoint.x) /
+                    Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+            if (distance < getBrushSize() / 2d) {
+                return true;
+            }
+            prevPoint = nextPoint;
+        }
         return false;
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void setLastPoint(Point point) {
+        points.remove(points.size() - 1);
+        points.add(point);
+    }
+
+    protected int[] getXCoordinates() {
+        return IntStream.concat(IntStream.of(getReferencePoint().x),
+                points.stream().mapToInt(point -> point.x))
+                .toArray();
+    }
+
+    protected int[] getYCoordinates() {
+        return IntStream.concat(IntStream.of(getReferencePoint().y),
+                points.stream().mapToInt(point -> point.y))
+                .toArray();
     }
 }//end figure.Polyline

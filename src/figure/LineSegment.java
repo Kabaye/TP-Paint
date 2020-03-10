@@ -47,6 +47,10 @@ public class LineSegment extends Figure1D {
 
     @Override
     public boolean contains(Point point) {
-        return false;
+        int deltaX = secondPoint.x - getReferencePoint().x;
+        int deltaY = secondPoint.y - getReferencePoint().y;
+        double distance = (Math.abs(deltaY * point.getX() - deltaX * point.y + secondPoint.x * getReferencePoint().y - secondPoint.y * getReferencePoint().x) /
+                Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+        return distance <= getBrushSize() / 2d;
     }
 }//end figure.LineSegment

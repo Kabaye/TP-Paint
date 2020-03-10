@@ -19,4 +19,10 @@ public class Triangle extends Polygon {
     public Triangle(List<Point> points, Color borderColor, Color innerColor, int brushSize) {
         super(points, borderColor, innerColor, brushSize);
     }
+
+    @Override
+    public void setFigureVertex(Point figureVertex) {
+        super.setFigureVertex(figureVertex);
+    }
+
 }//end figure.Triangle
