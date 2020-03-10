@@ -1,13 +1,9 @@
 package ui;
 
 import figure.Drawable;
-import figure.Figure;
-import figure.Figure2D;
 import figure.LineSegment;
 import figure.Polygon;
 import figure.Polyline;
-import figure.Rectangle;
-import figure.RegularPolygon;
 import utils.Drawables;
 
 import javax.swing.JButton;
@@ -53,6 +49,7 @@ public class App extends JFrame {
     private JToggleButton polygonBtn;
     private JToggleButton polylineBtn;
     private JToggleButton rectangleBtn;
+    private JToggleButton rhombusBtn;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
@@ -110,7 +107,8 @@ public class App extends JFrame {
                             repaint();
                             break;
                         case REGULAR_POLYGON:
-                            drawables.add(Drawables.createRegularPolygon(e.getPoint(), e.getPoint(), numOfSidesForRegularPolygon, borderColor, innerColor, brushSize));
+                            drawables.add(Drawables.createRegularPolygon(e.getPoint(), e.getPoint(), numOfSidesForRegularPolygon,
+                                    borderColor, innerColor, brushSize));
                             repaint();
                             break;
                         case POLYLINE:
@@ -124,8 +122,15 @@ public class App extends JFrame {
                             polyline.addPoint(e.getPoint());
                             repaint();
                         case RECTANGLE:
-                            drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, innerColor, brushSize));
+                            drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
                             repaint();
+                            break;
+                        case RHOMBUS:
+                            drawables.add(Drawables.createRhombus(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
                     }
                 }
             }
@@ -152,16 +157,13 @@ public class App extends JFrame {
                             segment.calculateSecondPoint();
                             break;
                         case ADD_POINT_TO_POLYGON:
-                            ((Polygon) drawable).setLastPoint(e.getPoint());
-                            break;
                         case REGULAR_POLYGON:
-                            ((RegularPolygon) drawable).setFigureVertex(e.getPoint());
+                        case RECTANGLE:
+                        case RHOMBUS:
+                            ((Polygon) drawable).setFigureVertex(e.getPoint());
                             break;
                         case ADD_POINT_TO_POLYLINE:
                             ((Polyline) drawable).setLastPoint(e.getPoint());
-                            break;
-                        case RECTANGLE:
-                            ((Rectangle) drawable).setFigureVertex(e.getPoint());
                             break;
                     }
                     repaint();
@@ -189,26 +191,20 @@ public class App extends JFrame {
         });
         polygonBtn.addActionListener(e -> drawAction = DrawActions.POLYGON);
         rectangleBtn.addActionListener(e -> drawAction = DrawActions.RECTANGLE);
+        rhombusBtn.addActionListener(e -> drawAction = DrawActions.RHOMBUS);
 
         innerColorBtn.addActionListener(e -> {
             Color innerColor = JColorChooser.showDialog(rootPane, "Choose inner color:", this.innerColor, true);
             this.innerColor = Objects.nonNull(innerColor) ? innerColor : this.innerColor;
             innerColorBtn.setBackground(this.innerColor);
-            drawables.forEach(drawable -> {
-                if (drawable instanceof Figure2D) {
-                    ((Figure2D) drawable).setInnerColor(this.innerColor);
-                }
-            });
         });
         borderColorBtn.addActionListener(e -> {
             Color borderColor = JColorChooser.showDialog(rootPane, "Choose border color:", this.borderColor, true);
             this.borderColor = Objects.nonNull(borderColor) ? borderColor : this.borderColor;
             borderColorBtn.setBackground(this.borderColor);
-            drawables.forEach(drawable -> ((Figure) drawable).setBorderColor(this.borderColor));
         });
         brushSizeSld.addChangeListener(e -> {
             this.brushSize = brushSizeSld.getValue();
-            drawables.forEach(drawable -> ((Figure) drawable).setBrushSize(this.brushSize));
         });
     }
 

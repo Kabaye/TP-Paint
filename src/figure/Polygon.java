@@ -29,8 +29,8 @@ public class Polygon extends Figure2D {
     @Override
     public void draw(Graphics2D graphics2D) {
         graphics2D.setStroke(new BasicStroke(getBrushSize()));
-        int[] xCoordinates = getXCoordinates();
-        int[] yCoordinates = getYCoordinates();
+        int[] xCoordinates = getXCoordinates(true);
+        int[] yCoordinates = getYCoordinates(true);
         graphics2D.setColor(getInnerColor());
         graphics2D.fillPolygon(xCoordinates, yCoordinates, xCoordinates.length);
         graphics2D.setColor(getBorderColor());
@@ -55,20 +55,20 @@ public class Polygon extends Figure2D {
         points.add(point);
     }
 
-    public void setLastPoint(Point point) {
+    public void setFigureVertex(Point point) {
         points.remove(points.size() - 1);
         points.add(point);
     }
 
-    protected int[] getXCoordinates() {
-        return IntStream.concat(IntStream.of(getReferencePoint().x),
-                points.stream().mapToInt(point -> point.x))
-                .toArray();
+    protected int[] getXCoordinates(boolean withReferencePoint) {
+        return withReferencePoint ? IntStream.concat(IntStream.of(getReferencePoint().x),
+                points.stream().mapToInt(point -> point.x)).toArray() :
+                getPoints().stream().mapToInt(point -> point.x).toArray();
     }
 
-    protected int[] getYCoordinates() {
-        return IntStream.concat(IntStream.of(getReferencePoint().y),
-                points.stream().mapToInt(point -> point.y))
-                .toArray();
+    protected int[] getYCoordinates(boolean withReferencePoint) {
+        return withReferencePoint ? IntStream.concat(IntStream.of(getReferencePoint().y),
+                points.stream().mapToInt(point -> point.y)).toArray() :
+                getPoints().stream().mapToInt(point -> point.y).toArray();
     }
 }//end figure.Polygon

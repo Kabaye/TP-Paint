@@ -38,13 +38,13 @@ public class Rectangle extends Polygon {
         calculatePoints(figureVertex);
     }
 
-    protected int[] getXCoordinates() {
-        return getPoints().stream().mapToInt(point -> point.x)
-                .toArray();
+    @Override
+    protected int[] getXCoordinates(boolean withReferencePoint) {
+        return super.getXCoordinates(false);
     }
 
-    protected int[] getYCoordinates() {
-        return getPoints().stream().mapToInt(point -> point.y)
-                .toArray();
+    @Override
+    protected int[] getYCoordinates(boolean withReferencePoint) {
+        return super.getYCoordinates(false);
     }
 }//end figure.Rectangle
