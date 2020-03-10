@@ -193,6 +193,8 @@ public class App extends JFrame {
                             repaint();
                             break;
                     }
+                } else if (SwingUtilities.isRightMouseButton(e)) {
+                    unselectAllButtons();
                 }
             }
 
@@ -241,19 +243,17 @@ public class App extends JFrame {
                         case CIRCLE:
                             ((Ellipse) drawable).setPointOnBorder(e.getPoint());
                             break;
-
-
                     }
                     repaint();
                 }
             }
-
         });
     }
 
     private void unselectAllButtons() {
         invisibleToggleBtn.doClick();
         invisibleToggleBtn.setSelected(true);
+        drawAction = DrawActions.NOTHING;
     }
 
     private void createUIComponents() {

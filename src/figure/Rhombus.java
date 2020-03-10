@@ -47,4 +47,4 @@ public class Rhombus extends Polygon {
     protected int[] getYCoordinates(boolean withReferencePoint) {
         return super.getYCoordinates(false);
     }
-}//end Rhomb
+}//end Rhombus
