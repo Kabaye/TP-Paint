@@ -5,10 +5,24 @@ import figure.Figure;
 import figure.Figure2D;
 import figure.LineSegment;
 import figure.Polygon;
-import utils.Figures;
+import figure.Polyline;
+import figure.RegularPolygon;
+import utils.Drawables;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -36,6 +50,7 @@ public class App extends JFrame {
     private JPanel sizePane;
     private JSlider brushSizeSld;
     private JToggleButton polygonBtn;
+    private JToggleButton polylineBtn;
     private DrawActions drawAction = DrawActions.MOVE;
     private int numOfSidesForRegularPolygon;
     private List<Drawable> drawables;
@@ -59,9 +74,98 @@ public class App extends JFrame {
 
     private void configureUI() {
         brushSize = brushSizeSld.getValue();
+        controlPaneListenersConfig();
+        drawPaneConfig();
+
+        setVisible(true);
+    }
+
+    private void drawPaneConfig() {
+        drawPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    switch (drawAction) {
+                        case LINE_SEGMENT:
+                            drawables.add(Drawables.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            repaint();
+                            break;
+                        case RAY:
+                            drawables.add(Drawables.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            break;
+                        case LINE:
+                            drawables.add(Drawables.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
+                            break;
+                        case POLYGON:
+                            drawables.add(Drawables.createPolygon(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
+                                    borderColor, innerColor, brushSize));
+                            drawAction = DrawActions.ADD_POINT_TO_POLYGON;
+                            repaint();
+                            break;
+                        case ADD_POINT_TO_POLYGON:
+                            Polygon polygon = (Polygon) drawables.get(drawables.size() - 1);
+                            polygon.addPoint(e.getPoint());
+                            repaint();
+                            break;
+                        case REGULAR_POLYGON:
+                            drawables.add(Drawables.createRegularPolygon(e.getPoint(), e.getPoint(), numOfSidesForRegularPolygon, borderColor, innerColor, brushSize));
+                            repaint();
+                            break;
+                        case POLYLINE:
+                            drawables.add(Drawables.createPolyline(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, brushSize));
+                            drawAction = DrawActions.ADD_POINT_TO_POLYLINE;
+                            repaint();
+                            break;
+                        case ADD_POINT_TO_POLYLINE:
+                            Polyline polyline = (Polyline) drawables.get(drawables.size() - 1);
+                            polyline.addPoint(e.getPoint());
+                            repaint();
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                // TODO: 10.03.2020 think about 2d figures
+                drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
+            }
+        });
+
+        drawPane.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e) && !drawables.isEmpty()) {
+                    Drawable drawable = drawables.get(drawables.size() - 1);
+                    switch (drawAction) {
+                        case LINE_SEGMENT:
+                        case RAY:
+                        case LINE:
+                            LineSegment segment = ((LineSegment) drawable);
+                            segment.setSecondPoint(e.getPoint());
+                            segment.calculateSecondPoint();
+                            break;
+                        case ADD_POINT_TO_POLYGON:
+                            ((Polygon) drawable).setLastPoint(e.getPoint());
+                            break;
+                        case REGULAR_POLYGON:
+                            ((RegularPolygon) drawable).setFigureVertex(e.getPoint());
+                            break;
+                        case ADD_POINT_TO_POLYLINE:
+                            ((Polyline) drawable).setLastPoint(e.getPoint());
+                            break;
+                    }
+                    repaint();
+                }
+            }
+        });
+    }
+
+    private void controlPaneListenersConfig() {
         lineSegmentBtn.addActionListener(e -> drawAction = DrawActions.LINE_SEGMENT);
         rayBtn.addActionListener(e -> drawAction = DrawActions.RAY);
         lineBtn.addActionListener(e -> drawAction = DrawActions.LINE);
+        polylineBtn.addActionListener(e -> drawAction = DrawActions.POLYLINE);
         regularPolygonBtn.addActionListener(e -> {
             final String dialogOutput = JOptionPane.showInputDialog(rootPane,
                     "Please, input number of regular polygon sides:", 5);
@@ -93,75 +197,8 @@ public class App extends JFrame {
         });
         brushSizeSld.addChangeListener(e -> {
             this.brushSize = brushSizeSld.getValue();
-            drawables.forEach(drawable -> ((Figure)drawable).setBrushSize(this.brushSize));
+            drawables.forEach(drawable -> ((Figure) drawable).setBrushSize(this.brushSize));
         });
-
-        drawPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    switch (drawAction) {
-                        case LINE_SEGMENT:
-                            drawables.add(Figures.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
-                            repaint();
-                            break;
-                        case RAY:
-                            drawables.add(Figures.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize));
-                            break;
-                        case LINE:
-                            drawables.add(Figures.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
-                            break;
-                        case POLYGON:
-                            drawables.add(Figures.createPolygon(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
-                                    borderColor, innerColor, brushSize));
-                            drawAction = DrawActions.ADD_POINT_TO_POLYGON;
-                            break;
-                        case ADD_POINT_TO_POLYGON:
-                            Polygon polygon = (Polygon) drawables.get(drawables.size() - 1);
-                            polygon.addPoint(e.getPoint());
-                            repaint();
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);
-                // TODO: 10.03.2020 filter polygon points inside polygon. Remove here polygon logic
-                drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
-                if (drawAction == DrawActions.ADD_POINT_TO_POLYGON && drawables.size() != 0 &&
-                        !drawables.get(drawables.size() - 1).getClass().equals(Polygon.class)) {
-                    drawAction = DrawActions.POLYGON;
-                }
-            }
-
-
-        });
-
-        drawPane.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e) && !drawables.isEmpty()) {
-                    Drawable drawable = drawables.get(drawables.size() - 1);
-                    switch (drawAction) {
-                        case LINE_SEGMENT:
-                        case RAY:
-                        case LINE:
-                            LineSegment segment = ((LineSegment) drawable);
-                            segment.setSecondPoint(e.getPoint());
-                            segment.calculateSecondPoint();
-                            break;
-                        case ADD_POINT_TO_POLYGON:
-                            ((Polygon) drawable).updateLastPoint(e.getPoint());
-                            break;
-                    }
-                    repaint();
-                }
-            }
-        });
-
-        setVisible(true);
     }
 
     private void createUIComponents() {

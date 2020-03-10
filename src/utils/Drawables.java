@@ -18,8 +18,8 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
 
-public class Figures {
-    private Figures() {
+public class Drawables {
+    private Drawables() {
     }
 
     public static Drawable createCircle(Point referencePoint, Point firstPoint, Color borderColor, Color innerColor, int brushSize) {
@@ -54,8 +54,8 @@ public class Figures {
         return new Rectangle(points, borderColor, innerColor, brushSize);
     }
 
-    public static Drawable createRegularPolygon(Point referencePoint, Point secondPoint, Integer numOfSides, Color borderColor, Color innerColor, int brushSize) {
-        return new RegularPolygon(referencePoint, secondPoint, numOfSides, borderColor, innerColor, brushSize);
+    public static Drawable createRegularPolygon(Point referencePoint, Point figureVertex, Integer numOfSides, Color borderColor, Color innerColor, int brushSize) {
+        return new RegularPolygon(referencePoint, figureVertex, numOfSides, borderColor, innerColor, brushSize);
     }
 
     public static Drawable createRhombus(List<Point> points, Color borderColor, Color innerColor, int brushSize) {

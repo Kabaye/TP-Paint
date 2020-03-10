@@ -7,7 +7,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -36,16 +35,10 @@ public class Polyline extends Figure1D {
 
     @Override
     public void move(Point newPoint) {
-
     }
 
     @Override
     public boolean nextForRemoving() {
-        if (points.size() != 1) {
-            HashSet<Point> uniquePoints = new HashSet<>(points);
-            uniquePoints.add(getReferencePoint());
-            return uniquePoints.size() <= 1;
-        }
         return false;
     }
 
@@ -54,13 +47,22 @@ public class Polyline extends Figure1D {
         return false;
     }
 
-    int[] getXCoordinates() {
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void setLastPoint(Point point) {
+        points.remove(points.size() - 1);
+        points.add(point);
+    }
+
+    protected int[] getXCoordinates() {
         return IntStream.concat(IntStream.of(getReferencePoint().x),
                 points.stream().mapToInt(point -> point.x))
                 .toArray();
     }
 
-    int[] getYCoordinates() {
+    protected int[] getYCoordinates() {
         return IntStream.concat(IntStream.of(getReferencePoint().y),
                 points.stream().mapToInt(point -> point.y))
                 .toArray();
