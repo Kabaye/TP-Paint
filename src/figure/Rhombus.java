@@ -52,9 +52,9 @@ public class Rhombus extends Polygon {
         return super.getYCoordinates(false);
     }
 
-    @Override
-    public boolean contains(Point point) {
-        return Math.abs((point.x - getReferencePoint().x) / (getPoints().get(0).x - getPoints().get(2).x)) +
-                Math.abs((point.y - getReferencePoint().y) / (getPoints().get(1).y - getPoints().get(3).y)) <= 2;
-    }
+//    @Override
+//    public boolean contains(Point point) {
+//        return Math.abs((point.x - getReferencePoint().x) / (getPoints().get(0).x - getPoints().get(2).x)) +
+//                Math.abs((point.y - getReferencePoint().y) / (getPoints().get(1).y - getPoints().get(3).y)) <= 2;
+//    }
 }//end Rhombus

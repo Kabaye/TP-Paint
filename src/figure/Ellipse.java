@@ -7,6 +7,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Ellipse2D;
 
 /**
  * @author svkul
@@ -58,8 +59,12 @@ public class Ellipse extends Figure2D {
 
     @Override
     public boolean contains(Point point) {
-        double alpha = (double) (point.x - getReferencePoint().x) / getWidth() * 2;
-        double beta = (double) (point.y - getReferencePoint().y) / getHeight() * 2;
-        return alpha * alpha + beta * beta < 1;
+//        double alpha = (double) (point.x - getReferencePoint().x) / getWidth() * 2;
+//        double beta = (double) (point.y - getReferencePoint().y) / getHeight() * 2;
+//        return alpha * alpha + beta * beta < 1;
+
+        Point leftPoint = calculateLeftTopPoint();
+        return new Ellipse2D.Float(leftPoint.x, leftPoint.y, (getReferencePoint().x - leftPoint.x) * 2,
+                (getReferencePoint().y - leftPoint.y) * 2).contains(point);
     }
 }//end figure.Ellipse

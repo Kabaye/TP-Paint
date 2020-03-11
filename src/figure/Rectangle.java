@@ -46,12 +46,4 @@ public class Rectangle extends Polygon {
     protected int[] getYCoordinates(boolean withReferencePoint) {
         return super.getYCoordinates(false);
     }
-
-    @Override
-    public boolean contains(Point point) {
-        Point leftTopPoint = getPoints().get(0);
-        Point rightBottomPoint = getPoints().get(2);
-        return point.x <= rightBottomPoint.x + getBrushSize() / 2 && point.x >= leftTopPoint.x - getBrushSize() / 2 &&
-                point.y >= leftTopPoint.y - getBrushSize() / 2 && point.y <= rightBottomPoint.y + getBrushSize() / 2;
-    }
 }//end figure.Rectangle
