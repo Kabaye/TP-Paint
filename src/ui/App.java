@@ -27,9 +27,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class App extends JFrame {
@@ -66,25 +70,188 @@ public class App extends JFrame {
     private int brushSize;
     private boolean isMoving = false;
 
+    private Map<DrawActions, Consumer<MouseEvent>> mousePressedConsumers = new HashMap<>();
+    private Map<DrawActions, Consumer<MouseEvent>> mouseReleasedConsumers = new HashMap<>();
+    private Map<DrawActions, BiConsumer<MouseEvent, Drawable>> mouseDraggedConsumers = new HashMap<>();
+
     public App() {
         super("Paint™ 2020. Kabaye Inc.");
+        configureApp();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(App::new);
+    }
+
+    private void configureApp() {
         setContentPane(rootPane);
         setSize((int) (1920 / 1.3), (int) (1080 / 1.3));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        configureConsumers();
+        controlPaneListenersConfig();
         configureUI();
-    }
-
-    public static void main(String[] args) {
-        new App();
+        setVisible(true);
     }
 
     private void configureUI() {
         brushSize = brushSizeSld.getValue();
-        controlPaneListenersConfig();
         drawPaneConfig();
+    }
 
-        setVisible(true);
+    private void drawPaneConfig() {
+        drawPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    mousePressedConsumers.get(drawAction).accept(e);
+                } else if (SwingUtilities.isRightMouseButton(e)) {
+                    unselectAllButtons();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                // TODO: 10.03.2020 think about 2d figures
+                drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
+                Consumer<MouseEvent> consumer = mouseReleasedConsumers.get(drawAction);
+                if (Objects.nonNull(consumer)) {
+                    consumer.accept(e);
+                }
+            }
+        });
+
+        drawPane.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e) && !drawables.isEmpty()) {
+                    mouseDraggedConsumers.get(drawAction).accept(e, drawables.get(drawables.size() - 1));
+                    repaint();
+                }
+            }
+        });
+    }
+
+    private void unselectAllButtons() {
+        invisibleToggleBtn.doClick();
+        invisibleToggleBtn.setSelected(true);
+        drawAction = DrawActions.NOTHING;
+    }
+
+    private void createUIComponents() {
+        drawPane = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D graphics2D = ((Graphics2D) g);
+                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                for (Drawable drawable : drawables) {
+                    drawable.draw(graphics2D);
+                }
+            }
+        };
+    }
+
+    private void configureConsumers() {
+        mousePressedConsumers.put(DrawActions.LINE_SEGMENT, (e) -> {
+            drawables.add(Drawables.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.RAY, (e) -> drawables.add(Drawables.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize)));
+        mousePressedConsumers.put(DrawActions.LINE, (e) -> drawables.add(Drawables.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize)));
+        mousePressedConsumers.put(DrawActions.POLYGON, (e) -> {
+            drawables.add(Drawables.createPolygon(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, innerColor, brushSize));
+            drawAction = DrawActions.ADD_POINT_TO_POLYGON;
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.ADD_POINT_TO_POLYGON, (e) -> {
+            Polygon polygon = (Polygon) drawables.get(drawables.size() - 1);
+            polygon.addPoint(e.getPoint());
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.REGULAR_POLYGON, (e) -> {
+            drawables.add(Drawables.createRegularPolygon(e.getPoint(), e.getPoint(), numOfSidesForRegularPolygon, borderColor, innerColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.POLYLINE, (e) -> {
+            drawables.add(Drawables.createPolyline(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, brushSize));
+            drawAction = DrawActions.ADD_POINT_TO_POLYLINE;
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.ADD_POINT_TO_POLYLINE, (e) -> {
+            Polyline polyline = (Polyline) drawables.get(drawables.size() - 1);
+            polyline.addPoint(e.getPoint());
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.RECTANGLE, (e) -> {
+            drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, innerColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.RHOMBUS, (e) -> {
+            drawables.add(Drawables.createRhombus(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, innerColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.TRIANGLE, (e) -> {
+            drawables.add(Drawables.createTriangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())), borderColor, innerColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.LAST_POINT_TRIANGLE, (e) -> {
+            Triangle triangle = (Triangle) drawables.get(drawables.size() - 1);
+            triangle.addPoint(e.getPoint());
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.ELLIPSE, (e) -> {
+            drawables.add(Drawables.createEllipse(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.CIRCLE, (e) -> {
+            drawables.add(Drawables.createCircle(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
+            repaint();
+        });
+        mousePressedConsumers.put(DrawActions.MOVE, (e) -> {
+            ListIterator<Drawable> iterator = drawables.listIterator(drawables.size());
+            while (iterator.hasPrevious()) {
+                int index = iterator.previousIndex();
+                if (iterator.previous().contains(e.getPoint())) {
+                    isMoving = true;
+                    drawables.add(drawables.remove(index));
+                    break;
+                }
+            }
+        });
+        mousePressedConsumers.put(DrawActions.NOTHING, (e) -> {
+        });
+
+        mouseReleasedConsumers.put(DrawActions.TRIANGLE, (e) -> drawAction = DrawActions.LAST_POINT_TRIANGLE);
+        mouseReleasedConsumers.put(DrawActions.LAST_POINT_TRIANGLE, (e) -> drawAction = DrawActions.TRIANGLE);
+        mouseReleasedConsumers.put(DrawActions.MOVE, (e) -> isMoving = false);
+
+        BiConsumer<MouseEvent, Drawable> mouseEventFigure1DBiConsumer = (e, drawable) -> {
+            LineSegment segment = ((LineSegment) drawable);
+            segment.setSecondPoint(e.getPoint());
+            segment.calculateSecondPoint();
+        };
+        BiConsumer<MouseEvent, Drawable> mouseEventPolygonBiConsumer = (e, drawable) -> ((Polygon) drawable).setFigureVertex(e.getPoint());
+        BiConsumer<MouseEvent, Drawable> mouseEventEllipseBiConsumer = (e, drawable) -> ((Ellipse) drawable).setPointOnBorder(e.getPoint());
+
+        mouseDraggedConsumers.put(DrawActions.LINE_SEGMENT, mouseEventFigure1DBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.RAY, mouseEventFigure1DBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.LINE, mouseEventFigure1DBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.ADD_POINT_TO_POLYGON, mouseEventPolygonBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.REGULAR_POLYGON, mouseEventPolygonBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.RECTANGLE, mouseEventPolygonBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.RHOMBUS, mouseEventPolygonBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.TRIANGLE, mouseEventPolygonBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.LAST_POINT_TRIANGLE, mouseEventPolygonBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.ADD_POINT_TO_POLYLINE, (e, drawable) -> ((Polyline) drawable).setLastPoint(e.getPoint()));
+        mouseDraggedConsumers.put(DrawActions.ELLIPSE, mouseEventEllipseBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.CIRCLE, mouseEventEllipseBiConsumer);
+        mouseDraggedConsumers.put(DrawActions.MOVE, (e, drawable) -> {
+            if (isMoving) {
+                drawable.move(e.getPoint());
+            }
+        });
     }
 
     private void controlPaneListenersConfig() {
@@ -121,172 +288,5 @@ public class App extends JFrame {
             borderColorBtn.setBackground(this.borderColor);
         });
         brushSizeSld.addChangeListener(e -> this.brushSize = brushSizeSld.getValue());
-    }
-
-    private void drawPaneConfig() {
-        drawPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    switch (drawAction) {
-                        case LINE_SEGMENT:
-                            drawables.add(Drawables.createLineSegment(e.getPoint(), e.getPoint(), borderColor, brushSize));
-                            repaint();
-                            break;
-                        case RAY:
-                            drawables.add(Drawables.createRay(e.getPoint(), e.getPoint(), borderColor, brushSize));
-                            break;
-                        case LINE:
-                            drawables.add(Drawables.createLine(e.getPoint(), e.getPoint(), borderColor, brushSize));
-                            break;
-                        case POLYGON:
-                            drawables.add(Drawables.createPolygon(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
-                                    borderColor, innerColor, brushSize));
-                            drawAction = DrawActions.ADD_POINT_TO_POLYGON;
-                            repaint();
-                            break;
-                        case ADD_POINT_TO_POLYGON:
-                            Polygon polygon = (Polygon) drawables.get(drawables.size() - 1);
-                            polygon.addPoint(e.getPoint());
-                            repaint();
-                            break;
-                        case REGULAR_POLYGON:
-                            drawables.add(Drawables.createRegularPolygon(e.getPoint(), e.getPoint(), numOfSidesForRegularPolygon,
-                                    borderColor, innerColor, brushSize));
-                            repaint();
-                            break;
-                        case POLYLINE:
-                            drawables.add(Drawables.createPolyline(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
-                                    borderColor, brushSize));
-                            drawAction = DrawActions.ADD_POINT_TO_POLYLINE;
-                            repaint();
-                            break;
-                        case ADD_POINT_TO_POLYLINE:
-                            Polyline polyline = (Polyline) drawables.get(drawables.size() - 1);
-                            polyline.addPoint(e.getPoint());
-                            repaint();
-                            break;
-                        case RECTANGLE:
-                            drawables.add(Drawables.createRectangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
-                                    borderColor, innerColor, brushSize));
-                            repaint();
-                            break;
-                        case RHOMBUS:
-                            drawables.add(Drawables.createRhombus(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
-                                    borderColor, innerColor, brushSize));
-                            repaint();
-                            break;
-                        case TRIANGLE:
-                            drawables.add(Drawables.createTriangle(new ArrayList<>(Arrays.asList(e.getPoint(), e.getPoint())),
-                                    borderColor, innerColor, brushSize));
-                            repaint();
-                            break;
-                        case LAST_POINT_TRIANGLE:
-                            Triangle triangle = (Triangle) drawables.get(drawables.size() - 1);
-                            triangle.addPoint(e.getPoint());
-                            repaint();
-                            break;
-                        case ELLIPSE:
-                            drawables.add(Drawables.createEllipse(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
-                            repaint();
-                            break;
-                        case CIRCLE:
-                            drawables.add(Drawables.createCircle(e.getPoint(), e.getPoint(), borderColor, innerColor, brushSize));
-                            repaint();
-                            break;
-                        case MOVE:
-                            ListIterator<Drawable> iterator = drawables.listIterator(drawables.size());
-                            while (iterator.hasPrevious()) {
-                                int index = iterator.previousIndex();
-                                if (iterator.previous().contains(e.getPoint())) {
-                                    isMoving = true;
-                                    drawables.add(drawables.remove(index));
-                                    break;
-                                }
-                            }
-                            break;
-                    }
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    unselectAllButtons();
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);
-                // TODO: 10.03.2020 think about 2d figures
-                drawables = drawables.stream().filter(drawable -> !drawable.nextForRemoving()).collect(Collectors.toList());
-                switch (drawAction) {
-                    case TRIANGLE:
-                        drawAction = DrawActions.LAST_POINT_TRIANGLE;
-                        break;
-                    case LAST_POINT_TRIANGLE:
-                        drawAction = DrawActions.TRIANGLE;
-                        break;
-                    case MOVE:
-                        isMoving = false;
-                        break;
-                }
-            }
-        });
-
-        drawPane.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e) && !drawables.isEmpty()) {
-                    Drawable drawable = drawables.get(drawables.size() - 1);
-                    switch (drawAction) {
-                        case LINE_SEGMENT:
-                        case RAY:
-                        case LINE:
-                            LineSegment segment = ((LineSegment) drawable);
-                            segment.setSecondPoint(e.getPoint());
-                            segment.calculateSecondPoint();
-                            break;
-                        case ADD_POINT_TO_POLYGON:
-                        case REGULAR_POLYGON:
-                        case RECTANGLE:
-                        case RHOMBUS:
-                        case TRIANGLE:
-                        case LAST_POINT_TRIANGLE:
-                            ((Polygon) drawable).setFigureVertex(e.getPoint());
-                            break;
-                        case ADD_POINT_TO_POLYLINE:
-                            ((Polyline) drawable).setLastPoint(e.getPoint());
-                            break;
-                        case ELLIPSE:
-                        case CIRCLE:
-                            ((Ellipse) drawable).setPointOnBorder(e.getPoint());
-                            break;
-                        case MOVE:
-                            if (isMoving) {
-                                drawable.move(e.getPoint());
-                            }
-                            break;
-                    }
-                    repaint();
-                }
-            }
-        });
-    }
-
-    private void unselectAllButtons() {
-        invisibleToggleBtn.doClick();
-        invisibleToggleBtn.setSelected(true);
-        drawAction = DrawActions.NOTHING;
-    }
-
-    private void createUIComponents() {
-        drawPane = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D graphics2D = ((Graphics2D) g);
-                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                for (Drawable drawable : drawables) {
-                    drawable.draw(graphics2D);
-                }
-            }
-        };
     }
 }
