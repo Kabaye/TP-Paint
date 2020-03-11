@@ -45,68 +45,66 @@ public class Polygon extends Figure2D {
     }
 
     @Override
-    public boolean nextForRemoving() {
-        return false;
-    }
-
-    @Override
     public boolean contains(Point point) {
-        int hits = 0;
-
-        int lastx = points.get(points.size() - 1).x;
-        int lasty = points.get(points.size() - 1).y;
-        int curx, cury;
-
-        // Walk the edges of the polygon
-        for (int i = 0; i < points.size(); lastx = curx, lasty = cury, i++) {
-            curx = points.get(i).x;
-            cury = points.get(i).y;
-
-            if (cury == lasty) {
-                continue;
-            }
-
-            int leftx;
-            if (curx < lastx) {
-                if (point.x >= lastx) {
-                    continue;
-                }
-                leftx = curx;
-            } else {
-                if (point.x >= curx) {
-                    continue;
-                }
-                leftx = lastx;
-            }
-
-            double test1, test2;
-            if (cury < lasty) {
-                if (point.y < cury || point.y >= lasty) {
-                    continue;
-                }
-                if (point.x < leftx) {
-                    hits++;
-                    continue;
-                }
-                test1 = point.x - curx;
-                test2 = point.y - cury;
-            } else {
-                if (point.y < lasty || point.y >= cury) {
-                    continue;
-                }
-                if (point.x < leftx) {
-                    hits++;
-                    continue;
-                }
-                test1 = point.x - lastx;
-                test2 = point.y - lasty;
-            }
-
-            if (test1 < (test2 / (lasty - cury) * (lastx - curx))) {
-                hits++;
-            }
-        }
-        return ((hits & 1) != 0);
+        final int[] xCoordinates = getXCoordinates(true);
+        final int[] yCoordinates = getYCoordinates(true);
+        return new java.awt.Polygon(xCoordinates, yCoordinates,xCoordinates.length).contains(point);
+//        int hits = 0;
+//
+//        int lastx = points.get(points.size() - 1).x;
+//        int lasty = points.get(points.size() - 1).y;
+//        int curx, cury;
+//
+//        // Walk the edges of the polygon
+//        for (int i = 0; i < points.size(); lastx = curx, lasty = cury, i++) {
+//            curx = points.get(i).x;
+//            cury = points.get(i).y;
+//
+//            if (cury == lasty) {
+//                continue;
+//            }
+//
+//            int leftx;
+//            if (curx < lastx) {
+//                if (point.x >= lastx) {
+//                    continue;
+//                }
+//                leftx = curx;
+//            } else {
+//                if (point.x >= curx) {
+//                    continue;
+//                }
+//                leftx = lastx;
+//            }
+//
+//            double test1, test2;
+//            if (cury < lasty) {
+//                if (point.y < cury || point.y >= lasty) {
+//                    continue;
+//                }
+//                if (point.x < leftx) {
+//                    hits++;
+//                    continue;
+//                }
+//                test1 = point.x - curx;
+//                test2 = point.y - cury;
+//            } else {
+//                if (point.y < lasty || point.y >= cury) {
+//                    continue;
+//                }
+//                if (point.x < leftx) {
+//                    hits++;
+//                    continue;
+//                }
+//                test1 = point.x - lastx;
+//                test2 = point.y - lasty;
+//            }
+//
+//            if (test1 < (test2 / (lasty - cury) * (lastx - curx))) {
+//                hits++;
+//            }
+//        }
+//        return ((hits & 1) != 0);
     }
 
     public void addPoint(Point point) {

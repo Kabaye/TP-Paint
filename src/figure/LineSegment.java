@@ -11,7 +11,7 @@ import java.awt.Point;
 /**
  * @author svkul
  * @version 1.0
- * @created 18-τεβ-2020 21:18:42
+ * @created 18-Γ΄Γ₯Γ’-2020 21:18:42
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

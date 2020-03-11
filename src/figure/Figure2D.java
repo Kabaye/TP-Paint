@@ -20,4 +20,9 @@ public abstract class Figure2D extends Figure {
         super(referencePoint, borderColor, brushSize);
         this.innerColor = innerColor;
     }
+
+    @Override
+    public boolean nextForRemoving() {
+        return false;
+    }
 }//end figure.Figure2D

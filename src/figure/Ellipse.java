@@ -11,7 +11,7 @@ import java.awt.Point;
 /**
  * @author svkul
  * @version 1.0
- * @created 18-фев-2020 21:18:42
+ * @created 18-пїЅпїЅпїЅ-2020 21:18:42
  */
 
 @EqualsAndHashCode(callSuper = true)
@@ -54,11 +54,6 @@ public class Ellipse extends Figure2D {
 
     protected int getHeight() {
         return Math.abs(2 * (getReferencePoint().y - pointOnBorder.y));
-    }
-
-    @Override
-    public boolean nextForRemoving() {
-        return false;
     }
 
     @Override
